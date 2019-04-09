@@ -1,0 +1,36 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: item-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/leyou
+    data-username: root
+    data-password: 123456
+  rabbitmq:
+    host: 192.168.37.24
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
+    template:                       # amqptemplate
+      retry:                        # 重试相关配置
+        enabled: true
+        initial-interval: 10000ms
+        max-interval: 30000ms
+        multiplier: 2
+      exchange: ly.item.exchange     #不写就默认这个交换机
+    publisher-confirms: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka # 注册中心地址
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+
+  #这样可以保证拿到的一定是ip,可以不配
+#  instance:
+#    prefer-ip-address: true
+#      ip-address: 127.0.0.1

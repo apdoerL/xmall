@@ -1,0 +1,51 @@
+server:
+  port: 10010
+spring:
+  application:
+    name: api-gateway
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka # 注册到registry注册中心
+zuul:
+#添加路由前缀,请求统一添加api前缀
+  prefix: /api
+  # 有服务注册就配置路由
+  routes:
+    item-service: /item/** # 把商品微服务路由到/item/**
+    search-service: /search/** # 把搜索服务路由到/search/**
+    user-service: /user/**    # 用户微服务
+    auth-service: /auth/**  # 授权中心微服务
+    cart-service: /cart/**  # 购物车微服务
+    order-service: /order/** #订单微服务
+    upload-service:
+      path: /upload/** # 将上传微服务映射到/upload/**
+      serviceId: upload-service
+      strip-prefix: false # 这样配置是为了去掉upload的前缀
+  add-host-header: true  # 添加host头信息
+  sensitive-headers:  # 不设置,就是所有头都不管
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMillisecond: 5000 # 熔断超时时长5s
+ribbon:
+  ConnectTimeout: 1000 # 连接超时时间(ms)
+  ReadTimeout: 3500 # 通信(读取)超时时间(ms)
+  MaxAutoRetriesNextServer: 0 # 同一服务不同实例的重试次数(切换服务重试次数)
+  MaxAutoRetries: 0 # 同一实例的重试次数(当前服务的重试次数)(新增重试可能会新增两次,设为0关闭重试)
+
+ly:
+  jwt:
+    pubKeyPath: G:/tmp/ssh/id_rsa.pub # 公钥地址
+    cookieName: LY_TOKEN
+  filter:
+    allowPaths:                   # 网关拦截器放行的接口,校验,搜索,注册,获取验证码,还有商品的查询接口
+      - /api/auth
+      - /api/search
+      - /api/user/register
+      - /api/user/check
+      - /api/user/code
+      - /api/item
